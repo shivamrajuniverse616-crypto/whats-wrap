@@ -45,7 +45,7 @@ export default function DashboardHeader({ chatters, streak, onReset, startDate }
 
   return (
     <header style={{
-      padding: '16px 20px',
+      padding: '12px 16px',
       borderBottom: '1px solid var(--card-border)',
       background: 'rgba(224,229,233,0.8)',
       backdropFilter: 'blur(20px)',
@@ -58,7 +58,7 @@ export default function DashboardHeader({ chatters, streak, onReset, startDate }
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 16px;
+          gap: 12px;
           maxWidth: 1100px;
           margin: 0 auto;
           width: 100%;
@@ -70,32 +70,40 @@ export default function DashboardHeader({ chatters, streak, onReset, startDate }
         .header-badges {
           display: flex;
           align-items: center;
-          gap: 8px;
-          margin-bottom: 6px;
+          gap: 6px;
+          margin-bottom: 4px;
           flex-wrap: wrap;
         }
         .header-actions {
           display: flex;
           align-items: center;
-          gap: 10px;
+          gap: 8px;
           flex-shrink: 0;
         }
         @media (max-width: 640px) {
           .header-container {
             flex-direction: column;
             align-items: flex-start;
-            gap: 12px;
+            gap: 10px;
           }
           .header-left {
             width: 100%;
           }
+          .header-badges {
+            margin-bottom: 2px;
+          }
           .header-actions {
             width: 100%;
+            display: flex;
+            flex-direction: row-reverse; /* Put Download All PNGs at the very end (right/last) */
             justify-content: space-between;
+            gap: 8px;
           }
           .header-actions button {
             flex: 1;
             justify-content: center;
+            padding: 8px 12px !important;
+            font-size: 0.75rem !important;
           }
         }
       `}</style>
@@ -105,14 +113,14 @@ export default function DashboardHeader({ chatters, streak, onReset, startDate }
           <div className="header-badges">
             {/* Brand pill */}
             <div style={{
-              display: 'inline-flex', alignItems: 'center', gap: 6,
+              display: 'inline-flex', alignItems: 'center', gap: 5,
               background: 'var(--grad-primary)',
-              borderRadius: 8, padding: '3px 10px',
+              borderRadius: 6, padding: '2px 8px',
             }}>
-              <MessageCircle size={11} color="#fff" />
+              <MessageCircle size={10} color="#fff" />
               <span style={{
-                fontSize: '0.62rem', fontWeight: 800,
-                color: '#fff', letterSpacing: '0.1em',
+                fontSize: '0.58rem', fontWeight: 800,
+                color: '#fff', letterSpacing: '0.08em',
                 textTransform: 'uppercase',
                 fontFamily: 'var(--font-heading)',
               }}>
@@ -123,12 +131,12 @@ export default function DashboardHeader({ chatters, streak, onReset, startDate }
             {/* Start Date badge */}
             {startDate && (
               <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 5,
+                display: 'inline-flex', alignItems: 'center', gap: 4,
                 background: 'var(--bg-overlay)',
                 border: '1px solid var(--card-border)',
                 borderRadius: 999,
-                padding: '3px 10px',
-                fontSize: '0.7rem', fontWeight: 700,
+                padding: '2px 8px',
+                fontSize: '0.65rem', fontWeight: 700,
                 color: 'var(--primary)',
                 whiteSpace: 'nowrap',
               }}>
@@ -139,12 +147,12 @@ export default function DashboardHeader({ chatters, streak, onReset, startDate }
             {/* Streak badge */}
             {streak > 0 && (
               <div style={{
-                display: 'inline-flex', alignItems: 'center', gap: 5,
+                display: 'inline-flex', alignItems: 'center', gap: 4,
                 background: 'rgba(251,146,60,0.1)',
                 border: '1px solid rgba(251,146,60,0.25)',
                 borderRadius: 999,
-                padding: '3px 10px',
-                fontSize: '0.7rem', fontWeight: 700,
+                padding: '2px 8px',
+                fontSize: '0.65rem', fontWeight: 700,
                 color: '#fb923c',
                 whiteSpace: 'nowrap',
               }}>
@@ -155,17 +163,17 @@ export default function DashboardHeader({ chatters, streak, onReset, startDate }
 
           <h1 style={{
             fontFamily: 'var(--font-heading)',
-            fontSize: 'clamp(1.1rem, 2.5vw, 1.5rem)',
+            fontSize: 'clamp(1rem, 2.5vw, 1.35rem)',
             fontWeight: 800,
             letterSpacing: '-0.025em',
             color: 'var(--on-surface)',
-            lineHeight: 1.2,
+            lineHeight: 1.1,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
           }}>
             <span className="gradient-text grad-primary-text">{user1}</span>
-            <span style={{ color: 'var(--on-surface-mute)', fontWeight: 400, margin: '0 8px' }}>&</span>
+            <span style={{ color: 'var(--on-surface-mute)', fontWeight: 400, margin: '0 6px' }}>&</span>
             <span className="gradient-text grad-secondary-text">{user2}</span>
           </h1>
         </div>
@@ -176,13 +184,13 @@ export default function DashboardHeader({ chatters, streak, onReset, startDate }
           <button
             onClick={handleDownloadAll}
             style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '9px 16px',
-              borderRadius: 12,
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '8px 14px',
+              borderRadius: 10,
               background: 'var(--primary)',
               border: '1px solid transparent',
               color: '#fff',
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               fontWeight: 600,
               cursor: 'pointer',
               transition: 'all 0.2s',
@@ -195,7 +203,7 @@ export default function DashboardHeader({ chatters, streak, onReset, startDate }
               e.currentTarget.style.background = 'var(--primary)';
             }}
           >
-            <Download size={14} />
+            <Download size={13} />
             <span>Download All PNGs</span>
           </button>
 
@@ -203,13 +211,13 @@ export default function DashboardHeader({ chatters, streak, onReset, startDate }
           <button
             onClick={onReset}
             style={{
-              display: 'flex', alignItems: 'center', gap: 8,
-              padding: '9px 16px',
-              borderRadius: 12,
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '8px 14px',
+              borderRadius: 10,
               background: 'var(--bg-overlay)',
               border: '1px solid var(--card-border)',
               color: 'var(--on-surface-dim)',
-              fontSize: '0.8rem',
+              fontSize: '0.78rem',
               fontWeight: 600,
               cursor: 'pointer',
               transition: 'all 0.2s',
@@ -226,7 +234,7 @@ export default function DashboardHeader({ chatters, streak, onReset, startDate }
               e.currentTarget.style.background = 'var(--bg-overlay)';
             }}
           >
-            <RefreshCw size={14} />
+            <RefreshCw size={13} />
             <span>New Chat</span>
           </button>
         </div>

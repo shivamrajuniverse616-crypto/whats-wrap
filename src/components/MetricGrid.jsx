@@ -95,12 +95,21 @@ export default function MetricGrid({ data }) {
       </div>
 
       {/* Stats grid */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))',
-        gap: 14,
-        marginBottom: 20,
-      }} className="stagger">
+      <style>{`
+        .overview-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+          margin-bottom: 20px;
+        }
+        @media (min-width: 600px) {
+          .overview-grid {
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 14px;
+          }
+        }
+      `}</style>
+      <div className="overview-grid stagger">
         {stats.map(({ label, value, sub, Icon, gradient, glow, textClass }, idx) => (
           <div
             key={idx}
