@@ -13,7 +13,7 @@ import SideNav from './components/SideNav';
 
 import { parseChat } from './utils/chatParser';
 import { analyzeChat } from './utils/chatAnalyzer';
-import { Sparkles, MessageCircle, Heart, ShieldCheck } from 'lucide-react';
+import { Sparkles, MessageCircle, Heart, ShieldCheck, Github } from 'lucide-react';
 
 export default function App() {
   const [chatData, setChatData] = React.useState(null);
@@ -70,24 +70,55 @@ export default function App() {
           position: 'relative', zIndex: 1,
         }} className="anim-fade-up">
 
-          {/* Hero badge */}
+          {/* Hero badges (Open Source + Version) */}
           <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 8,
-            background: 'var(--primary-glow)',
-            border: '1px solid rgba(0, 180, 216, 0.2)',
-            borderRadius: 999,
-            padding: '6px 16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 12,
             marginBottom: 32,
+            flexWrap: 'wrap',
+            justifyContent: 'center'
           }}>
-            <Sparkles size={14} color="var(--primary)" />
-            <span style={{
-              fontSize: '0.7rem', fontWeight: 700,
-              color: 'var(--primary)',
-              textTransform: 'uppercase', letterSpacing: '0.12em',
-              fontFamily: 'var(--font-heading)',
+            {/* Open Source Pill */}
+            <a 
+              href="https://github.com/gtxPrime/whats-wrap"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover-scale"
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 6,
+                background: 'var(--bg-overlay)',
+                border: '1px solid var(--card-border)',
+                borderRadius: 999,
+                padding: '6px 14px',
+                fontSize: '0.7rem', fontWeight: 600,
+                color: 'var(--on-surface-dim)',
+                textDecoration: 'none',
+                transition: 'all 0.2s'
+              }}
+            >
+              <Github size={13} />
+              <span>Open Source on GitHub</span>
+            </a>
+
+            {/* Premium Sparkle tag */}
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: 'var(--primary-glow)',
+              border: '1px solid rgba(0, 180, 216, 0.2)',
+              borderRadius: 999,
+              padding: '6px 16px',
             }}>
-              WhatsWrap 2026
-            </span>
+              <Sparkles size={14} color="var(--primary)" />
+              <span style={{
+                fontSize: '0.7rem', fontWeight: 700,
+                color: 'var(--primary)',
+                textTransform: 'uppercase', letterSpacing: '0.12em',
+                fontFamily: 'var(--font-heading)',
+              }}>
+                WhatsWrap 2026
+              </span>
+            </div>
           </div>
 
           {/* Headline */}
@@ -229,6 +260,7 @@ export default function App() {
               borderTop: '1px solid var(--card-border)',
               padding: '20px 32px',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
               gap: 8,
@@ -237,8 +269,25 @@ export default function App() {
               fontWeight: 500,
               letterSpacing: '0.05em',
             }}>
-              <Heart size={12} color="#f87171" fill="#f87171" />
-              <span>Made with WhatsWrap · Client-Side Protected</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Heart size={11} color="#f87171" fill="#f87171" />
+                <span>Made with WhatsWrap · 100% Private Client-Side</span>
+              </div>
+              <a 
+                href="https://github.com/gtxPrime/whats-wrap"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ 
+                  color: 'var(--primary)', 
+                  textDecoration: 'none', 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: 4 
+                }}
+              >
+                <Github size={12} />
+                <span>Source Code on GitHub</span>
+              </a>
             </footer>
           </main>
         </div>

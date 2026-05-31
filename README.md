@@ -1,13 +1,17 @@
 # 💬 WhatsWrap
 
 <p align="center">
+  <a href="https://whatsupwrap.netlify.app/" target="_blank">
+    <img src="https://img.shields.io/badge/Live%20Demo-Netlify-00AD9F?style=for-the-badge&logo=netlify&logoColor=white" alt="Live Demo" />
+  </a>
   <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
   <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=FFD62B" alt="Vite" />
-  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
   <img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License" />
 </p>
 
 **WhatsWrap** is a gorgeous, premium, and interactive browser-based dashboard that transforms your exported WhatsApp chat logs into a highly visual, personalized, and private year-in-recap review (similar to Spotify Wrapped). 
+
+> 🌐 **Live Demo:** Try it out live at **[whatsupwrap.netlify.app](https://whatsupwrap.netlify.app/)**!
 
 It is a **100% client-side** application, meaning that all chat parsing, logic calculations, and rendering occur entirely in your local browser window. **Your chat files are never uploaded or transmitted to any server**, keeping your conversations fully private and secure.
 
