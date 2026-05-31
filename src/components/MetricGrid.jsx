@@ -158,11 +158,14 @@ export default function MetricGrid({ data }) {
             {/* Value */}
             <div className={`${textClass} font-heading`} style={{
               fontFamily: 'var(--font-heading)',
-              fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+              fontSize: value.toString().length > 8 ? 'clamp(1.1rem, 2.5vw, 1.45rem)' : 'clamp(1.5rem, 3vw, 2rem)',
               fontWeight: 900,
               letterSpacing: '-0.03em',
-              lineHeight: 1,
+              lineHeight: 1.1,
               marginBottom: 6,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
             }}>
               {value}
             </div>

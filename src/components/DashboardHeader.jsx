@@ -24,8 +24,8 @@ export default function DashboardHeader({ chatters, onReset }) {
         width: '100%',
         gap: 16,
       }}>
-        {/* Empty left spacer to center the title absolute-style on wide viewports, or normal flex centering */}
-        <div style={{ width: 100, flexShrink: 0 }} className="mobile-hidden-spacer" />
+        {/* Empty left spacer to center the title perfectly across all viewports */}
+        <div style={{ width: 85, flexShrink: 0 }} />
 
         {/* Center: Names */}
         <h1 style={{
@@ -47,7 +47,7 @@ export default function DashboardHeader({ chatters, onReset }) {
         </h1>
 
         {/* Right: New Chat Action only */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', width: 100, flexShrink: 0 }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', width: 85, flexShrink: 0 }}>
           <button
             onClick={onReset}
             style={{
@@ -79,13 +79,6 @@ export default function DashboardHeader({ chatters, onReset }) {
           </button>
         </div>
       </div>
-      <style>{`
-        @media (max-width: 640px) {
-          .mobile-hidden-spacer {
-            display: none !important;
-          }
-        }
-      `}</style>
     </header>
   );
 }
