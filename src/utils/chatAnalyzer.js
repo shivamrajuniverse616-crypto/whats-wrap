@@ -749,7 +749,7 @@ function compileMilestones(messages, chatters, maxStreak, busiestDayStr, busiest
   // 3. First "I Love You" (Cute trigger)
   const loveMsg = messages.find(m => {
     const content = m.content ? m.content.toLowerCase() : '';
-    return content.includes('i love you') || content.includes('love you baby') || content.includes('ily');
+    return content.includes('i love you') || content.includes('love you baby') || /\bily\b/.test(content);
   });
   if (loveMsg) {
     milestones.push({

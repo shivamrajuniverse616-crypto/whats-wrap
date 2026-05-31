@@ -1,6 +1,6 @@
 import React from 'react';
 import { MessageCircle, Sparkles, RefreshCw, Download } from 'lucide-react';
-import { exportToPng } from '../utils/exporter';
+import { exportToPng, exportToPdf } from '../utils/exporter';
 
 export default function DashboardHeader({ chatters, onReset }) {
   const [user1, user2] = chatters;
@@ -46,8 +46,39 @@ export default function DashboardHeader({ chatters, onReset }) {
           <span className="gradient-text grad-secondary-text">{user2}</span>
         </h1>
 
-        {/* Right: New Chat Action only */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', width: 85, flexShrink: 0 }}>
+        {/* Right: Actions */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', width: 'auto', gap: 8, flexShrink: 0 }}>
+          <button
+            onClick={() => exportToPdf('dashboard-root')}
+            className="export-btn"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '6px 12px',
+              borderRadius: 8,
+              background: 'var(--bg-overlay)',
+              border: '1px solid var(--card-border)',
+              color: 'var(--on-surface-dim)',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              whiteSpace: 'nowrap',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.borderColor = 'var(--primary)';
+              e.currentTarget.style.color = 'var(--primary)';
+              e.currentTarget.style.background = 'var(--primary-glow)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.borderColor = 'var(--card-border)';
+              e.currentTarget.style.color = 'var(--on-surface-dim)';
+              e.currentTarget.style.background = 'var(--bg-overlay)';
+            }}
+          >
+            <Download size={12} />
+            <span>Export PDF</span>
+          </button>
+          
           <button
             onClick={onReset}
             style={{
