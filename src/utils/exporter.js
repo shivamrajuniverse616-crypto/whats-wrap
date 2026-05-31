@@ -4,51 +4,55 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
   const node = document.getElementById(elementId);
   if (!node) return;
 
-  // Save original inline styles to restore later
-  const originalWidth = node.style.width;
-  const originalMaxWidth = node.style.maxWidth;
-  const originalBoxSizing = node.style.boxSizing;
+  // Create an offscreen wrapper container to prevent viewport-based clipping
+  const wrapper = document.createElement('div');
+  wrapper.style.position = 'fixed';
+  wrapper.style.left = '9999px';
+  wrapper.style.top = '0';
+  wrapper.style.width = '580px';
+  wrapper.style.zIndex = '-9999';
+
+  // Clone the element and clean its layouts
+  const clone = node.cloneNode(true);
+  clone.style.setProperty('width', '580px', 'important');
+  clone.style.setProperty('max-width', '580px', 'important');
+  clone.style.setProperty('box-sizing', 'border-box', 'important');
+  clone.style.setProperty('margin', '0', 'important');
+  clone.style.setProperty('position', 'relative', 'important');
+  clone.style.setProperty('padding', '24px 24px 60px 24px', 'important'); // extra padding-bottom to clear watermark space
+  clone.style.setProperty('background', 'var(--bg-base)', 'important');
+  clone.style.setProperty('border-radius', '24px', 'important');
+
+  // Hide buttons with .export-btn class inside the clone
+  const buttons = clone.querySelectorAll('.export-btn');
+  buttons.forEach(btn => btn.style.setProperty('display', 'none', 'important'));
+
+  // Inject watermark at bottom right of the clone
+  const watermark = document.createElement('div');
+  watermark.innerText = 'whatsupwrap.netlify.app';
+  watermark.style.position = 'absolute';
+  watermark.style.bottom = '16px';
+  watermark.style.right = '24px';
+  watermark.style.fontSize = '10px';
+  watermark.style.fontWeight = '700';
+  watermark.style.fontFamily = 'var(--font-heading)';
+  watermark.style.color = 'var(--on-surface-mute)';
+  watermark.style.opacity = '0.75';
+  watermark.style.pointerEvents = 'none';
+  watermark.style.zIndex = '9999';
+  clone.appendChild(watermark);
+
+  // Append elements to DOM for layout engine processing
+  wrapper.appendChild(clone);
+  document.body.appendChild(wrapper);
 
   try {
-    // Temporarily hide buttons with .export-btn class inside the element
-    const buttons = node.querySelectorAll('.export-btn');
-    buttons.forEach(btn => btn.style.setProperty('display', 'none', 'important'));
-
-    // Force the element to 580px width in the DOM so html-to-image measures correct height & width
-    node.style.setProperty('width', '580px', 'important');
-    node.style.setProperty('max-width', '580px', 'important');
-    node.style.setProperty('box-sizing', 'border-box', 'important');
-
-    // Inject watermark at bottom right of the node
-    const watermark = document.createElement('div');
-    watermark.innerText = 'whatsupwrap.netlify.app';
-    watermark.style.position = 'absolute';
-    watermark.style.bottom = '12px';
-    watermark.style.right = '20px';
-    watermark.style.fontSize = '10px';
-    watermark.style.fontWeight = '700';
-    watermark.style.fontFamily = 'var(--font-heading)';
-    watermark.style.color = 'var(--on-surface-mute)';
-    watermark.style.opacity = '0.75';
-    watermark.style.pointerEvents = 'none';
-    watermark.style.zIndex = '9999';
-    node.appendChild(watermark);
-
-    // Create high-res screenshot
-    const dataUrl = await toPng(node, {
+    // Create high-res screenshot from the clean offscreen clone
+    const dataUrl = await toPng(clone, {
       backgroundColor: 'var(--bg-base)',
-      style: {
-        borderRadius: '24px',
-        padding: '24px 24px 44px 24px', // extra padding-bottom to clear watermark space
-        margin: '0',
-      },
       quality: 0.98,
       pixelRatio: 2.5, // Crisp 2.5x density for crystal-clear sharing!
     });
-
-    // Remove watermark and restore buttons
-    node.removeChild(watermark);
-    buttons.forEach(btn => btn.style.removeProperty('display'));
 
     // Create clean download link
     const link = document.createElement('a');
@@ -58,9 +62,7 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
   } catch (error) {
     console.error('Failed to export PNG:', error);
   } finally {
-    // Restore original styles
-    node.style.width = originalWidth;
-    node.style.maxWidth = originalMaxWidth;
-    node.style.boxSizing = originalBoxSizing;
+    // Clean up offscreen nodes
+    document.body.removeChild(wrapper);
   }
 };
