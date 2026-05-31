@@ -46,6 +46,9 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
   wrapper.appendChild(clone);
   document.body.appendChild(wrapper);
 
+  // Wait for the browser to perform layout calculations & styling on the new DOM nodes
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
   try {
     // Create high-res screenshot from the clean offscreen clone
     const dataUrl = await toPng(clone, {
