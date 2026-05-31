@@ -201,60 +201,6 @@ export default function ChartSection({ data }) {
           </BarChart>
         </ResponsiveContainer>
       </ChartCard>
-
-      {/* Heatmap */}
-      <ChartCard title="Chat Heatmap" subtitle="Message density by day & hour — darker = more active" icon={Clock} iconColor="var(--primary)">
-        <div style={{ overflowX: 'auto', paddingBottom: 8 }}>
-          <div style={{ minWidth: 600 }}>
-            {/* Hour labels */}
-            <div className="heatmap-grid" style={{ marginBottom: 4 }}>
-              <div style={{ fontSize: '0.6rem', color: 'var(--on-surface-mute)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                DAY
-              </div>
-              {hours.map(h => (
-                <div key={h} style={{
-                  fontSize: '0.6rem', color: 'var(--on-surface-mute)',
-                  textAlign: 'center', fontWeight: 600,
-                }}>
-                  {h === 0 ? '12a' : h === 12 ? '12p' : h % 12}
-                </div>
-              ))}
-            </div>
-
-            {weekDays.map((day, dIdx) => (
-              <div key={day} className="heatmap-grid" style={{ marginBottom: 3 }}>
-                <div style={{ fontSize: '0.72rem', color: 'var(--on-surface-dim)', fontWeight: 600 }}>
-                  {day}
-                </div>
-                {hours.map(hIdx => {
-                  const w = getCellWeight(dIdx, hIdx);
-                  return (
-                    <div
-                      key={hIdx}
-                      className={`heatmap-cell ${heatClass(w)}`}
-                      title={`${day} @ ${hIdx}:00`}
-                    />
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Legend */}
-        <div style={{
-          display: 'flex', alignItems: 'center', justifyContent: 'flex-end',
-          gap: 8, marginTop: 12,
-          fontSize: '0.65rem', fontWeight: 600,
-          color: 'var(--on-surface-mute)', textTransform: 'uppercase', letterSpacing: '0.08em',
-        }}>
-          <span>Less</span>
-          {['hc-0', 'hc-1', 'hc-2', 'hc-3', 'hc-4'].map(c => (
-            <div key={c} className={`heatmap-cell ${c}`} style={{ width: 14, height: 14, borderRadius: 3, flexShrink: 0 }} />
-          ))}
-          <span>More</span>
-        </div>
-      </ChartCard>
     </div>
   );
 }

@@ -56,18 +56,48 @@ export default function FirstMessage({ data }) {
             <History size={14} /> The Very First Message
           </div>
 
-          <div style={{
-            fontFamily: 'var(--font-heading)',
-            fontSize: 'clamp(1.5rem, 4vw, 2.5rem)',
-            fontWeight: 800,
-            color: 'var(--on-surface)',
-            lineHeight: 1.2,
-            letterSpacing: '-0.02em',
-            marginBottom: 24,
-            maxWidth: '90%'
-          }}>
-            "{firstMessage.content || 'Media omitted'}"
-          </div>
+          {(() => {
+            let displayContent = firstMessage.content;
+            let isPlaceholder = !displayContent || displayContent.trim() === '' || firstMessage.isMedia || firstMessage.isViewOnce;
+
+            if (!displayContent || displayContent.trim() === '') {
+              displayContent = '📷 Sent a view-once media';
+            } else {
+              const lower = displayContent.toLowerCase();
+              if (lower.includes('<media omitted>') || lower.includes('image omitted')) {
+                displayContent = '📷 Shared a photo';
+                isPlaceholder = true;
+              } else if (lower.includes('sticker omitted') || lower.includes('stk-') || /stk-\d+/i.test(lower)) {
+                displayContent = '🎨 Shared a sticker';
+                isPlaceholder = true;
+              } else if (lower.includes('video omitted')) {
+                displayContent = '🎥 Shared a video';
+                isPlaceholder = true;
+              } else if (lower.includes('audio omitted')) {
+                displayContent = '🎵 Shared a voice note';
+                isPlaceholder = true;
+              } else if (lower.includes('document omitted')) {
+                displayContent = '📄 Shared a document';
+                isPlaceholder = true;
+              }
+            }
+
+            return (
+              <div style={{
+                fontFamily: 'var(--font-heading)',
+                fontSize: 'clamp(1.3rem, 3.5vw, 2.2rem)',
+                fontWeight: 800,
+                color: isPlaceholder ? 'var(--on-surface-mute)' : 'var(--on-surface)',
+                lineHeight: 1.2,
+                letterSpacing: '-0.02em',
+                marginBottom: 24,
+                maxWidth: '90%',
+                fontStyle: isPlaceholder ? 'italic' : 'normal'
+              }}>
+                {isPlaceholder ? displayContent : `"${displayContent}"`}
+              </div>
+            );
+          })()}
 
           <div style={{
             display: 'flex',

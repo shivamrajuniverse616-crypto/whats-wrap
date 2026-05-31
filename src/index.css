@@ -299,13 +299,14 @@ h1, h2, h3, h4, h5, h6 {
   background: rgba(224, 229, 233, 0.96);
   backdrop-filter: blur(24px);
   border-top: 1px solid var(--card-border);
-  padding: 8px 12px 14px;
+  padding: 8px 16px 14px;
   z-index: 98;
-  overflow-x: visible;
-  justify-content: space-around;
+  overflow-x: auto;
+  justify-content: flex-start;
   align-items: center;
-  gap: 0px;
+  gap: 12px;
   scrollbar-width: none; /* Hide default scrollbar on Firefox */
+  -webkit-overflow-scrolling: touch;
 }
 
 .mobile-bottom-nav::-webkit-scrollbar {
@@ -317,7 +318,7 @@ h1, h2, h3, h4, h5, h6 {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 6px 12px;
+  padding: 6px 8px;
   border-radius: 12px;
   font-size: 0.58rem;
   font-weight: 700;
@@ -329,7 +330,7 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   flex-shrink: 0;
-  width: 60px;
+  white-space: nowrap;
 }
 
 .mobile-nav-item.center-fab {

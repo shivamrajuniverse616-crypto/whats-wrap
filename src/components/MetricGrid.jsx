@@ -112,7 +112,6 @@ export default function MetricGrid({ data }) {
         <p className="section-subtitle" style={{ paddingLeft: 38 }}>Your chat statistics at a glance</p>
       </div>
 
-      {/* Stats grid */}
       <style>{`
         .overview-grid {
           display: grid;
@@ -120,16 +119,13 @@ export default function MetricGrid({ data }) {
           gap: 12px;
           margin-bottom: 20px;
         }
-        @media (min-width: 600px) {
-          .overview-grid {
-            grid-template-columns: repeat(3, 1fr);
-            gap: 14px;
-          }
+        .overview-grid > div:first-child {
+          grid-column: span 2;
         }
-        @media (min-width: 960px) {
+        @media (min-width: 768px) {
           .overview-grid {
-            grid-template-columns: repeat(6, 1fr);
-            gap: 14px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
           }
         }
       `}</style>

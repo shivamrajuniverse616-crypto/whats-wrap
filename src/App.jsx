@@ -11,7 +11,7 @@ import ChartSection from './components/ChartSection';
 import Milestones from './components/Milestones';
 import SideNav from './components/SideNav';
 import FirstMessage from './components/FirstMessage';
-import HeatmapCalendar from './components/HeatmapCalendar';
+import ChatHeatmap from './components/ChatHeatmap';
 import Clouds from './components/Clouds';
 import ResponseTime from './components/ResponseTime';
 import MediaDiet from './components/MediaDiet';
@@ -20,7 +20,7 @@ import TexterTypology from './components/TexterTypology';
 import { exportToPdf } from './utils/exporter';
 import { parseChat } from './utils/chatParser';
 import { analyzeChat } from './utils/chatAnalyzer';
-import { Sparkles, MessageCircle, Heart, ShieldCheck } from 'lucide-react';
+import { Sparkles, MessageCircle, Heart, ShieldCheck, Download } from 'lucide-react';
 
 export default function App() {
   const [chatData, setChatData] = React.useState(null);
@@ -155,7 +155,7 @@ export default function App() {
             lineHeight: 1.7,
             marginBottom: 48,
           }}>
-            Transform your exported chats into a jaw-dropping annual recap —
+            Transform your exported chats into a jaw-dropping annual recap,
             streaks, awards, personalities, compatibility scores &amp; beautiful charts.
             100% private, runs in your browser.
           </p>
@@ -224,7 +224,7 @@ export default function App() {
               <div style={{ height: 56 }} />
 
               <section id="heatmap" className="dashboard-section">
-                <HeatmapCalendar data={chatData} />
+                <ChatHeatmap data={chatData} />
               </section>
 
               <div style={{ height: 56 }} />
@@ -301,6 +301,38 @@ export default function App() {
                   <ChartSection data={chatData} />
                 </div>
               </section>
+
+              {/* End of report action */}
+              <div style={{ display: 'flex', justifyContent: 'center', marginTop: 48, marginBottom: 16 }}>
+                <button
+                  onClick={() => exportToPdf('dashboard-root')}
+                  className="export-btn"
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 8,
+                    padding: '12px 24px',
+                    borderRadius: 12,
+                    background: 'var(--grad-primary)',
+                    color: '#fff',
+                    fontSize: '0.9rem',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    border: 'none',
+                    boxShadow: '0 4px 20px rgba(167,139,250,0.3)',
+                  }}
+                  onMouseEnter={e => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.boxShadow = '0 6px 24px rgba(167,139,250,0.4)';
+                  }}
+                  onMouseLeave={e => {
+                    e.currentTarget.style.transform = 'none';
+                    e.currentTarget.style.boxShadow = '0 4px 20px rgba(167,139,250,0.3)';
+                  }}
+                >
+                  <Download size={16} />
+                  <span>Download Full Report (PDF)</span>
+                </button>
+              </div>
             </div>
 
             {/* Footer */}

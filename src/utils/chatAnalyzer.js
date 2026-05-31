@@ -62,6 +62,7 @@ export function analyzeChat(messages, participants) {
       doubleTextCount: 0,
       chaosCascadesCount: 0,
       midnightBroadcastsCount: 0,
+      stickerCount: 0,
       emojis: [],
       emojiCount: 0,
       wordsUsed: {},
@@ -128,6 +129,7 @@ export function analyzeChat(messages, participants) {
     if (msg.isMedia) stats.mediaCount++;
     if (msg.isViewOnce) stats.viewOnceCount++;
     if (msg.isDeleted) stats.deletedCount++;
+    if (msg.isSticker) stats.stickerCount++;
     stats.linksCount += msg.linksCount;
 
     // Domains tracking (Media Diet)
@@ -423,8 +425,8 @@ export function analyzeChat(messages, participants) {
   // Milestones compilation
   const milestones = compileMilestones(messages, chatters, maxStreak, busiestDayStr, busiestDayCount);
 
-  // First message (skip media and deleted messages)
-  const firstMessage = messages.find(m => !m.isMedia && !m.isDeleted && m.content && m.content.trim().length > 0) || (messages.length > 0 ? messages[0] : null);
+  // First message
+  const firstMessage = messages[0] || null;
   const firstMessageDateStr = firstMessage ? firstMessage.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
 
   // Overall Vibe Check
@@ -681,7 +683,7 @@ function compileAwards(chatters, userStats) {
       description: 'Notorious for reading a message and replying 4 hours later as if nothing happened.',
       colorClass: 'purple'
     }
-  ];
+  ].filter(a => a.score > 0);
 }
 
 /**
@@ -789,19 +791,19 @@ function compileCompatibility(chatters, userStats, hourlyDist) {
   // Overall Score
   const score = Math.round((replySync + emojiStyleMatch + overlapPercent + balance) / 4);
 
-  let tag = 'Soulmates — you finish each other\'s sentences!';
+  let tag = 'Soulmates: you finish each other\'s sentences!';
   let icon = '❤️';
   if (score >= 90) {
-    tag = 'Soulmates — you finish each other\'s sentences!';
+    tag = 'Soulmates: you finish each other\'s sentences!';
     icon = '💝 🔄';
   } else if (score >= 80) {
-    tag = 'Late Night Gossipers — the lore runs deep!';
+    tag = 'Late Night Gossipers: the lore runs deep!';
     icon = '🌙 🗣️';
   } else if (score >= 70) {
-    tag = 'Speed Dial Buddies — always there in a flash!';
+    tag = 'Speed Dial Buddies: always there in a flash!';
     icon = '⚡ 🤝';
   } else {
-    tag = 'Balanced Banterers — standard daily comfort rhythm.';
+    tag = 'Balanced Banterers: standard daily comfort rhythm.';
     icon = '⚖️ 💬';
   }
 
@@ -945,8 +947,11 @@ function compileMilestones(messages, chatters, maxStreak, busiestDayStr, busiest
   const firstMsg = messages[0];
   if (firstMsg) {
     let descContent = '';
+    const isViewOnce = firstMsg.isViewOnce || !firstMsg.content || firstMsg.content.trim() === '';
     if (firstMsg.isMedia) {
-      descContent = "📷 Shared a media memory snippet to start the conversation!";
+      descContent = isViewOnce
+        ? "📸 Opened the vault with a mysterious view-once media!"
+        : "📷 Shared a media memory snippet to start the conversation!";
     } else {
       descContent = firstMsg.content ? `"${firstMsg.content.slice(0, 100)}${firstMsg.content.length > 100 ? '...' : ''}"` : "Conversations officially kicked off!";
     }
@@ -966,12 +971,15 @@ function compileMilestones(messages, chatters, maxStreak, busiestDayStr, busiest
   // 2. First photo shared
   const mediaMsg = messages.find(m => m.isMedia);
   if (mediaMsg) {
+    const isViewOnce = mediaMsg.isViewOnce || !mediaMsg.content || mediaMsg.content.trim() === '';
     milestones.push({
       id: 'first-photo',
       title: 'First Photo Shared',
       subtitle: mediaMsg.sender,
       date: formatDate(mediaMsg.date),
-      desc: 'Shared a media memory snippet, kicking off photo dumps!',
+      desc: isViewOnce
+        ? 'Shared a mysterious view-once snap, gone in a blink!'
+        : 'Shared a media memory snippet, kicking off photo dumps!',
       type: 'photo',
       icon: '📸',
       colorClass: 'cyan'

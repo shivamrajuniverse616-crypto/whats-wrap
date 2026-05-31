@@ -16,16 +16,16 @@ export default function DashboardHeader({ chatters, onReset }) {
       zIndex: 50,
     }} className="anim-fade-up">
       <div style={{
-        display: 'flex',
+        display: 'grid',
+        gridTemplateColumns: '1fr auto 1fr',
         alignItems: 'center',
-        justifyContent: 'space-between',
         maxWidth: 1100,
         margin: '0 auto',
         width: '100%',
         gap: 16,
       }}>
-        {/* Empty left spacer to center the title perfectly across all viewports */}
-        <div style={{ width: 85, flexShrink: 0 }} />
+        {/* Left column: Empty spacer for alignment */}
+        <div />
 
         {/* Center: Names */}
         <h1 style={{
@@ -36,10 +36,6 @@ export default function DashboardHeader({ chatters, onReset }) {
           color: 'var(--on-surface)',
           lineHeight: 1.1,
           textAlign: 'center',
-          flex: 1,
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
         }}>
           <span className="gradient-text grad-primary-text">{user1}</span>
           <span style={{ color: 'var(--on-surface-mute)', fontWeight: 400, margin: '0 8px' }}>&</span>
@@ -47,38 +43,7 @@ export default function DashboardHeader({ chatters, onReset }) {
         </h1>
 
         {/* Right: Actions */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', width: 'auto', gap: 8, flexShrink: 0 }}>
-          <button
-            onClick={() => exportToPdf('dashboard-root')}
-            className="export-btn"
-            style={{
-              display: 'flex', alignItems: 'center', gap: 6,
-              padding: '6px 12px',
-              borderRadius: 8,
-              background: 'var(--bg-overlay)',
-              border: '1px solid var(--card-border)',
-              color: 'var(--on-surface-dim)',
-              fontSize: '0.75rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              whiteSpace: 'nowrap',
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.borderColor = 'var(--primary)';
-              e.currentTarget.style.color = 'var(--primary)';
-              e.currentTarget.style.background = 'var(--primary-glow)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.borderColor = 'var(--card-border)';
-              e.currentTarget.style.color = 'var(--on-surface-dim)';
-              e.currentTarget.style.background = 'var(--bg-overlay)';
-            }}
-          >
-            <Download size={12} />
-            <span>Export PDF</span>
-          </button>
-          
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
           <button
             onClick={onReset}
             style={{
