@@ -1,6 +1,10 @@
 # 💬 WhatsWrap
 
 <p align="center">
+  <img src="public/favicon.svg" alt="WhatsWrap Logo" width="120" height="120" style="border-radius: 28px;" />
+</p>
+
+<p align="center">
   <a href="https://whatsupwrap.netlify.app/" target="_blank">
     <img src="https://img.shields.io/badge/Live%20Demo-Netlify-00AD9F?style=for-the-badge&logo=netlify&logoColor=white" alt="Live Demo" />
   </a>
