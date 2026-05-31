@@ -20,7 +20,7 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
   clone.style.setProperty('margin', '0', 'important');
   clone.style.setProperty('position', 'relative', 'important');
   clone.style.setProperty('padding', '24px 24px 60px 24px', 'important'); // extra padding-bottom to clear watermark space
-  clone.style.setProperty('background', 'var(--bg-base)', 'important');
+  clone.style.setProperty('background', '#e0e5e9', 'important');
   clone.style.setProperty('border-radius', '24px', 'important');
 
   // Hide buttons with .export-btn class inside the clone
@@ -36,7 +36,7 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
   watermark.style.fontSize = '10px';
   watermark.style.fontWeight = '700';
   watermark.style.fontFamily = 'var(--font-heading)';
-  watermark.style.color = 'var(--on-surface-mute)';
+  watermark.style.color = '#708492';
   watermark.style.opacity = '0.75';
   watermark.style.pointerEvents = 'none';
   watermark.style.zIndex = '9999';
@@ -49,7 +49,7 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
   try {
     // Create high-res screenshot from the clean offscreen clone
     const dataUrl = await toPng(clone, {
-      backgroundColor: 'var(--bg-base)',
+      backgroundColor: '#e0e5e9',
       quality: 0.98,
       pixelRatio: 2.5, // Crisp 2.5x density for crystal-clear sharing!
     });
