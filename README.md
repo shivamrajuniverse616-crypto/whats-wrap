@@ -65,4 +65,4 @@ WhatsWrap takes user privacy extremely seriously.
 
 ## 📝 License
 
-This project is licensed under the MIT License. Made by shivam raj.
+This project is licensed under the MIT License. Made by gtxprime.
