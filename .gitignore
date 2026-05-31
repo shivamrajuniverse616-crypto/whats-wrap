@@ -19,6 +19,9 @@ send-alert.php
 .env
 .env.*
 
+# Agent/AI tooling (never commit)
+.agent/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
