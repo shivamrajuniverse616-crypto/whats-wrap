@@ -3,10 +3,21 @@ import { toPng } from 'html-to-image';
 export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
   const node = document.getElementById(elementId);
   if (!node) return;
+
+  // Save original inline styles to restore later
+  const originalWidth = node.style.width;
+  const originalMaxWidth = node.style.maxWidth;
+  const originalBoxSizing = node.style.boxSizing;
+
   try {
     // Temporarily hide buttons with .export-btn class inside the element
     const buttons = node.querySelectorAll('.export-btn');
     buttons.forEach(btn => btn.style.setProperty('display', 'none', 'important'));
+
+    // Force the element to 580px width in the DOM so html-to-image measures correct height & width
+    node.style.setProperty('width', '580px', 'important');
+    node.style.setProperty('max-width', '580px', 'important');
+    node.style.setProperty('box-sizing', 'border-box', 'important');
 
     // Inject watermark at bottom right of the node
     const watermark = document.createElement('div');
@@ -23,15 +34,13 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
     watermark.style.zIndex = '9999';
     node.appendChild(watermark);
 
-    // Create high-res screenshot with a clean fixed width to guarantee perfect alignment & margins on all devices
+    // Create high-res screenshot
     const dataUrl = await toPng(node, {
       backgroundColor: 'var(--bg-base)',
       style: {
         borderRadius: '24px',
         padding: '24px 24px 44px 24px', // extra padding-bottom to clear watermark space
-        width: '580px',
-        maxWidth: '580px',
-        boxSizing: 'border-box',
+        margin: '0',
       },
       quality: 0.98,
       pixelRatio: 2.5, // Crisp 2.5x density for crystal-clear sharing!
@@ -48,5 +57,10 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
     link.click();
   } catch (error) {
     console.error('Failed to export PNG:', error);
+  } finally {
+    // Restore original styles
+    node.style.width = originalWidth;
+    node.style.maxWidth = originalMaxWidth;
+    node.style.boxSizing = originalBoxSizing;
   }
 };
