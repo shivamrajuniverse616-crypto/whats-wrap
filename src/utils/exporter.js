@@ -68,17 +68,22 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
     // Ensure web fonts are loaded
     await document.fonts.ready;
 
+    const originalScrollY = window.scrollY;
+    window.scrollTo(0, 0);
+
     const canvas = await html2canvas(node, {
       backgroundColor:  '#e0e5e9',
       scale:             2,            // 2× for retina sharpness
       useCORS:           true,
       allowTaint:        false,
       logging:           false,
-      scrollX:           0,
-      scrollY:           0,
+      scrollX: 0,
+      scrollY: 0,
+      width: node.scrollWidth,
+      height: node.scrollHeight,
       // Use the actual viewport width so vw/clamp() units match the screen
-      windowWidth:       window.innerWidth,
-      windowHeight:      window.innerHeight,
+      windowWidth: document.documentElement.scrollWidth,
+      windowHeight: document.documentElement.scrollHeight,
 
       onclone: (_clonedDoc, clonedEl) => {
         // Fix gradient text before html2canvas touches the canvas
@@ -98,6 +103,8 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
         });
       },
     });
+
+    window.scrollTo(0, originalScrollY);
 
     // ── Composite onto a padded canvas with watermark ─────────────────────────
     const MARGIN = 32;   // px padding around the card (at 1× — doubled for DPR)
@@ -149,9 +156,10 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
  * @param {string} filename   - Output filename (without .pdf)
  */
 export const exportToPdf = async (elementId, filename = 'whatswrap-dashboard') => {
-  const node = document.getElementById(elementId);
+  // Regardless of elementId, we grab .app-main to get the header and content
+  const node = document.querySelector('.app-main');
   if (!node) {
-    console.error(`[exportToPdf] Element #${elementId} not found.`);
+    console.error(`[exportToPdf] .app-main not found.`);
     return;
   }
 
@@ -161,48 +169,159 @@ export const exportToPdf = async (elementId, filename = 'whatswrap-dashboard') =
 
   try {
     await document.fonts.ready;
+    const originalScrollY = window.scrollY;
+    window.scrollTo(0, 0);
 
-    // Use a slightly lower scale for PDF to manage file size and memory
+    // Force a wide desktop viewport so the layout is compact vertically
+    const DESKTOP_WIDTH = 1200;
+    const SCALE = 1.5;
+    let blocks = [];
+
     const canvas = await html2canvas(node, {
       backgroundColor: '#e0e5e9',
-      scale: 1.5,
+      scale: SCALE,
       useCORS: true,
       allowTaint: false,
       logging: false,
       scrollX: 0,
       scrollY: 0,
-      windowWidth: window.innerWidth,
-      windowHeight: node.scrollHeight,
-
-      onclone: (_clonedDoc, clonedEl) => {
+      width: DESKTOP_WIDTH,
+      windowWidth: DESKTOP_WIDTH,
+      onclone: (_clonedDoc) => {
         fixGradientText(_clonedDoc);
+        
+        // Hide mobile navigation if it's there
+        const sideNav = _clonedDoc.querySelector('.sidenav');
+        if (sideNav) sideNav.style.display = 'none';
+        
+        const bottomNav = _clonedDoc.querySelector('.mobile-bottom-nav');
+        if (bottomNav) bottomNav.style.display = 'none';
+
+        // Remove the sidebar margin from the main container so it centers perfectly
+        const main = _clonedDoc.querySelector('.app-main');
+        if (main) {
+          main.style.marginLeft = '0px';
+          main.style.paddingBottom = '0px';
+        }
+
+        const header = _clonedDoc.querySelector('header');
+        if (header) header.style.position = 'static';
+
         _clonedDoc.querySelectorAll('[style*="text-overflow"]').forEach(el => {
           el.style.setProperty('text-overflow', 'ellipsis', 'important');
         });
         _clonedDoc.querySelectorAll('*').forEach(el => {
-          el.style.animation       = 'none';
-          el.style.transition      = 'none';
-          el.style.animationDelay  = '0s';
+          el.style.animation = 'none';
+          el.style.transition = 'none';
+          el.style.animationDelay = '0s';
         });
+
+        // ─────────────────────────────────────────────────────────────────
+        // Calculate the bounding boxes of unbreakable elements in the cloned DOM
+        // ─────────────────────────────────────────────────────────────────
+        if (main) {
+           const rootRect = main.getBoundingClientRect();
+           const els = _clonedDoc.querySelectorAll('.m3-card, .section-header, header');
+           els.forEach(el => {
+              const rect = el.getBoundingClientRect();
+              blocks.push({
+                 top: rect.top - rootRect.top,
+                 bottom: rect.bottom - rootRect.top
+              });
+           });
+           // Sort from top to bottom
+           blocks.sort((a, b) => a.top - b.top);
+        }
       },
     });
 
-    const imgData = canvas.toDataURL('image/jpeg', 0.95);
-    
-    // Use the exact dimensions of the canvas for a single continuous PDF page
+    window.scrollTo(0, originalScrollY);
+
+    // Create a multi-page A4 PDF
     const pdf = new jsPDF({
-      orientation: canvas.width > canvas.height ? 'l' : 'p',
+      orientation: 'p',
       unit: 'px',
-      format: [canvas.width, canvas.height]
+      format: 'a4'
     });
 
-    pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
-    // Add Watermark to the PDF before saving
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    
+    // ratio to convert from canvas pixels to PDF pixels
+    const ratio = canvas.width / pdfWidth;
+    const canvasPageHeight = pdfHeight * ratio; 
+    
+    let currentCanvasY = 0;
+    
+    while (currentCanvasY < canvas.height) {
+       let sliceHeight = canvasPageHeight;
+       
+       // If this is the final slice and fits within page
+       if (currentCanvasY + sliceHeight >= canvas.height) {
+          sliceHeight = canvas.height - currentCanvasY;
+       } else {
+          // Smart Pagination: ensure we don't slice any blocks in half
+          const cutLineCanvas = currentCanvasY + sliceHeight;
+          const cutLineDOM = cutLineCanvas / SCALE;
+          
+          let safeCutLineDOM = cutLineDOM;
+          for (let i = 0; i < blocks.length; i++) {
+             const b = blocks[i];
+             // If a block crosses the cutline
+             if (b.top < cutLineDOM && b.bottom > cutLineDOM) {
+                 // Move cutline up to the top of this block (minus 24px padding)
+                 safeCutLineDOM = b.top - 24;
+                 break;
+             }
+          }
+          
+          let safeCutLineCanvas = safeCutLineDOM * SCALE;
+          
+          // Fallback: if moving the cutline up means we can't fit a single block
+          // (e.g. block is taller than an entire page), force cut inside it
+          if (safeCutLineCanvas <= currentCanvasY + 50) {
+             safeCutLineCanvas = cutLineCanvas; 
+          }
+          
+          sliceHeight = safeCutLineCanvas - currentCanvasY;
+       }
+       
+       // Create a temporary canvas for the exact slice
+       const sliceCanvas = document.createElement('canvas');
+       sliceCanvas.width = canvas.width;
+       sliceCanvas.height = sliceHeight;
+       const sliceCtx = sliceCanvas.getContext('2d');
+       
+       // Fill background to prevent transparency bleeding
+       sliceCtx.fillStyle = '#e0e5e9';
+       sliceCtx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+       
+       sliceCtx.drawImage(
+         canvas, 
+         0, currentCanvasY, canvas.width, sliceHeight, // source
+         0, 0, sliceCanvas.width, sliceCanvas.height   // destination
+       );
+       
+       const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.95);
+       const pdfSliceHeight = sliceHeight / ratio;
+       
+       if (currentCanvasY > 0) pdf.addPage();
+       
+       pdf.addImage(sliceData, 'JPEG', 0, 0, pdfWidth, pdfSliceHeight);
+       
+       currentCanvasY += sliceHeight;
+    }
+
+    // Add Watermark to all pages
+    const pageCount = pdf.internal.getNumberOfPages();
     pdf.setFont('helvetica', 'bold');
     pdf.setFontSize(14);
     pdf.setTextColor(100, 116, 139);
-    // Draw the watermark text at the bottom center of the page
-    pdf.text('whatsupwrap.netlify.app', canvas.width / 2, canvas.height - 20, { align: 'center' });
+    
+    for (let i = 1; i <= pageCount; i++) {
+      pdf.setPage(i);
+      pdf.text('whatsupwrap.netlify.app', pdfWidth / 2, pdfHeight - 20, { align: 'center' });
+    }
 
     pdf.save(`${filename}.pdf`);
 

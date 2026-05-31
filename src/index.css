@@ -49,8 +49,8 @@
   --grad-aurora:    linear-gradient(135deg, #004e64 0%, #0077b6 50%, #00b4d8 100%);
 
   /* Typography */
-  --font-heading: 'Outfit', system-ui, sans-serif;
-  --font-body:    'Inter', system-ui, sans-serif;
+  --font-heading: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  --font-body:    'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
   /* Transitions */
   --ease-out:   cubic-bezier(0.2, 0, 0, 1);
@@ -300,12 +300,11 @@ h1, h2, h3, h4, h5, h6 {
   backdrop-filter: blur(24px);
   border-top: 1px solid var(--card-border);
   padding: 8px 12px 14px;
-  z-index: 100;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  justify-content: flex-start;
+  z-index: 98;
+  overflow-x: visible;
+  justify-content: space-around;
   align-items: center;
-  gap: 8px;
+  gap: 0px;
   scrollbar-width: none; /* Hide default scrollbar on Firefox */
 }
 
@@ -330,6 +329,34 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.05em;
   text-transform: uppercase;
   flex-shrink: 0;
+  width: 60px;
+}
+
+.mobile-nav-item.center-fab {
+  position: relative;
+  top: -24px;
+  background: var(--grad-primary);
+  border-radius: 50%;
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(0, 168, 150, 0.4);
+  color: white;
+  padding: 0;
+  margin: 0 12px;
+}
+.mobile-nav-item.center-fab span {
+  display: none;
+}
+.mobile-nav-item.center-fab .mobile-nav-item-icon {
+  width: 28px;
+  height: 28px;
+}
+.mobile-nav-item.center-fab.active {
+  background: var(--grad-primary);
+  color: white;
 }
 
 .mobile-nav-item.active {
@@ -705,7 +732,37 @@ h1, h2, h3, h4, h5, h6 {
    RESPONSIVE
    ========================================= */
 @media (max-width: 900px) {
-  .sidenav { display: none; }
+  .sidenav { 
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    z-index: 1000;
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0.3s;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.2);
+  }
+  .sidenav.mobile-open {
+    transform: translateX(0);
+    visibility: visible;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear;
+  }
+  .mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .mobile-overlay.visible {
+    display: block;
+    opacity: 1;
+  }
   .app-main { margin-left: 0; padding-bottom: 80px; }
   .mobile-bottom-nav { display: flex; }
 }

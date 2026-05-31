@@ -1,10 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { LayoutDashboard, Clock, Trophy, UserCircle2, HeartPulse, GitCommit, RefreshCw, MessageCircle } from 'lucide-react';
+import { LayoutDashboard, Clock, Trophy, UserCircle2, HeartPulse, GitCommit, RefreshCw, MessageCircle, History, Calendar as CalIcon, Cloud as CloudIcon, Hourglass, Snowflake, Link2, BookOpen, Menu } from 'lucide-react';
 
 const NAV_ITEMS = [
   { id: 'overview',      label: 'Overview',       Icon: LayoutDashboard },
+  { id: 'heatmap',       label: 'Activity',       Icon: CalIcon },
+  { id: 'clouds',        label: 'Clouds',         Icon: CloudIcon },
+  { id: 'first-message', label: 'First Message',  Icon: History },
   { id: 'capsule',       label: 'Time Capsule',   Icon: Clock },
   { id: 'awards',        label: 'Awards',         Icon: Trophy },
+  { id: 'response',      label: 'Response Time',  Icon: Hourglass },
+  { id: 'silent',        label: 'Silent Gap',     Icon: Snowflake },
+  { id: 'media-diet',    label: 'Media Diet',     Icon: Link2 },
+  { id: 'typology',      label: 'Typology',       Icon: BookOpen },
   { id: 'personalities', label: 'Personalities',  Icon: UserCircle2 },
   { id: 'longest',       label: 'Longest Texts',  Icon: MessageCircle },
   { id: 'compatibility', label: 'Compatibility',  Icon: HeartPulse },
@@ -20,6 +27,7 @@ function scrollToSection(id) {
 
 export default function SideNav({ onReset, chatters, streak }) {
   const [active, setActive] = useState('overview');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const observerRef = useRef(null);
 
   useEffect(() => {
@@ -44,12 +52,18 @@ export default function SideNav({ onReset, chatters, streak }) {
   const handleClick = (id) => {
     setActive(id);
     scrollToSection(id);
+    setIsMobileMenuOpen(false);
   };
 
   return (
     <>
-      {/* ── Desktop Sidebar ── */}
-      <aside className="sidenav">
+      <div 
+        className={`mobile-overlay ${isMobileMenuOpen ? 'visible' : ''}`} 
+        onClick={() => setIsMobileMenuOpen(false)}
+      />
+
+      {/* ── Desktop Sidebar / Mobile Drawer ── */}
+      <aside className={`sidenav ${isMobileMenuOpen ? 'mobile-open' : ''}`}>
         {/* Brand */}
         <div className="sidenav-brand">
           <div className="sidenav-brand-icon">
@@ -134,7 +148,9 @@ export default function SideNav({ onReset, chatters, streak }) {
 
       {/* ── Mobile Bottom Nav ── */}
       <nav className="mobile-bottom-nav">
-        {NAV_ITEMS.map(({ id, label, Icon }) => (
+        
+        {/* Left Side */}
+        {NAV_ITEMS.filter(item => ['heatmap', 'awards'].includes(item.id)).map(({ id, label, Icon }) => (
           <button
             key={id}
             className={`mobile-nav-item${active === id ? ' active' : ''}`}
@@ -144,6 +160,40 @@ export default function SideNav({ onReset, chatters, streak }) {
             <span>{label.split(' ')[0]}</span>
           </button>
         ))}
+
+        {/* Center FAB */}
+        {NAV_ITEMS.filter(item => item.id === 'overview').map(({ id, label, Icon }) => (
+          <button
+            key={id}
+            className={`mobile-nav-item center-fab${active === id ? ' active' : ''}`}
+            onClick={() => handleClick(id)}
+          >
+            <Icon className="mobile-nav-item-icon" size={24} />
+            <span>{label.split(' ')[0]}</span>
+          </button>
+        ))}
+
+        {/* Right Side */}
+        {NAV_ITEMS.filter(item => item.id === 'capsule').map(({ id, label, Icon }) => (
+          <button
+            key={id}
+            className={`mobile-nav-item${active === id ? ' active' : ''}`}
+            onClick={() => handleClick(id)}
+          >
+            <Icon className="mobile-nav-item-icon" size={20} />
+            <span>{label.split(' ')[0]}</span>
+          </button>
+        ))}
+
+        {/* More Menu */}
+        <button
+          className={`mobile-nav-item${isMobileMenuOpen ? ' active' : ''}`}
+          onClick={() => setIsMobileMenuOpen(true)}
+        >
+          <Menu className="mobile-nav-item-icon" size={20} />
+          <span>More</span>
+        </button>
+
       </nav>
     </>
   );
