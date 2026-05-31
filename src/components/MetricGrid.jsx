@@ -1,12 +1,9 @@
 import React from 'react';
-import { MessageCircle, Type, Flame, Zap, Calendar, BarChart3, Download } from 'lucide-react';
+import { MessageCircle, Type, Flame, Zap, Calendar, BarChart3, Download, Activity } from 'lucide-react';
 import { exportToPng } from '../utils/exporter';
 
 const STATS = (data) => {
-  const { totalMessages, totalWords, maxStreak, avgMessagesPerDay, busiestDay, chatters, milestones } = data;
-  
-  // Try to grab the first milestone date (which is the Start Date)
-  const startDateVal = milestones?.[0]?.date || 'N/A';
+  const { totalMessages, totalWords, maxStreak, avgMessagesPerDay, busiestDay, totalDays } = data;
 
   return [
     {
@@ -55,10 +52,10 @@ const STATS = (data) => {
       textClass: 'gradient-text grad-gold-text',
     },
     {
-      label: 'First Dive',
-      value: `${maxStreak} Day Streak`,
-      sub: `Started ${startDateVal}`,
-      Icon: Calendar,
+      label: 'Active Days',
+      value: totalDays.toLocaleString(),
+      sub: 'Days with messages',
+      Icon: Activity,
       gradient: 'var(--grad-pink)',
       glow: 'rgba(216,27,96,0.18)',
       textClass: 'gradient-text grad-pink-text',
