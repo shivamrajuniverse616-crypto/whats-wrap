@@ -83,25 +83,23 @@ export default function App() {
             <a 
               href="https://github.com/gtxPrime/whats-wrap"
               target="_blank"
-              rel="noopener noreferrer"
-              className="hover-scale"
+              rel="noreferrer"
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 6,
                 background: 'var(--bg-overlay)',
                 border: '1px solid var(--card-border)',
                 borderRadius: 999,
-                padding: '6px 14px',
-                fontSize: '0.7rem', fontWeight: 600,
-                color: 'var(--on-surface-dim)',
+                padding: '4px 12px',
                 textDecoration: 'none',
+                color: 'var(--on-surface-dim)',
+                fontSize: '0.7rem', fontWeight: 600,
                 transition: 'all 0.2s'
               }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--on-surface-mute)'}
+              onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--card-border)'}
             >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-                <path d="M9 18c-4.51 2-5-2-7-2" />
-              </svg>
-              <span>Open Source on GitHub</span>
+              <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+              Open Source
             </a>
 
             {/* Premium Sparkle tag */}
@@ -210,7 +208,7 @@ export default function App() {
             />
 
             {/* All sections rendered one below each other */}
-            <div style={{ padding: '0 32px 64px', maxWidth: 1100, margin: '0 auto', width: '100%' }}>
+            <div id="dashboard-root" style={{ padding: '0 32px 64px', maxWidth: 1100, margin: '0 auto', width: '100%' }}>
 
               <section id="overview" className="dashboard-section" style={{ paddingTop: 16 }}>
                 <MetricGrid data={chatData} />
@@ -272,53 +270,9 @@ export default function App() {
             }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Heart size={11} color="#f87171" fill="#f87171" />
-                <span>Made with WhatsWrap · 100% Private Client-Side</span>
+                <span>Built with blood, sweat, and caffeine by <a href="https://github.com/gtxPrime" target="_blank" rel="noreferrer" style={{color: 'var(--primary)', textDecoration: 'none'}}>gtxPrime</a></span>
               </div>
-              
-              {/* Links row */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
-                {/* Open source repo */}
-                <a
-                  href="https://github.com/gtxPrime/whats-wrap"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    color: 'var(--primary)',
-                    textDecoration: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                  }}
-                >
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
-                    <path d="M9 18c-4.51 2-5-2-7-2" />
-                  </svg>
-                  <span>Open Source on GitHub</span>
-                </a>
-
-                {/* Divider dot */}
-                <span style={{ opacity: 0.4 }}>·</span>
-
-                {/* Author */}
-                <a
-                  href="https://github.com/gtxPrime"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    textDecoration: 'none',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    color: 'var(--on-surface-mute)',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.color = 'var(--primary)'}
-                  onMouseLeave={e => e.currentTarget.style.color = 'var(--on-surface-mute)'}
-                >
-                  <span>Made by</span>
-                  <span style={{ fontWeight: 700, color: 'var(--primary)' }}>@gtxPrime</span>
-                </a>
-              </div>
+              <div>100% Private Client-Side Application</div>
             </footer>
           </main>
         </div>

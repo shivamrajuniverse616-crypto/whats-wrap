@@ -1,24 +1,6 @@
 # 💬 WhatsWrap
 
-<p align="center">
-  <img src="public/favicon.svg" alt="WhatsWrap Logo" width="120" height="120" style="border-radius: 28px;" />
-</p>
-
-<p align="center">
-  <a href="https://whatsupwrap.netlify.app/" target="_blank">
-    <img src="https://img.shields.io/badge/Live%20Demo-whatsupwrap.netlify.app-00AD9F?style=for-the-badge&logo=netlify&logoColor=white" alt="Live Demo" />
-  </a>
-  <a href="https://whatswrapadv.netlify.app/" target="_blank">
-    <img src="https://img.shields.io/badge/Mirror-whatswrapadv.netlify.app-0077B6?style=for-the-badge&logo=netlify&logoColor=white" alt="Mirror" />
-  </a>
-  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
-  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=FFD62B" alt="Vite" />
-  <img src="https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge" alt="License" />
-</p>
-
 **WhatsWrap** is a gorgeous, premium, and interactive browser-based dashboard that transforms your exported WhatsApp chat logs into a highly visual, personalized, and private year-in-recap review (similar to Spotify Wrapped). 
-
-> 🌐 **Live Demo:** Try it out at **[whatsupwrap.netlify.app](https://whatsupwrap.netlify.app/)** · If that's down: **[whatswrapadv.netlify.app](https://whatswrapadv.netlify.app/)**
 
 It is a **100% client-side** application, meaning that all chat parsing, logic calculations, and rendering occur entirely in your local browser window. **Your chat files are never uploaded or transmitted to any server**, keeping your conversations fully private and secure.
 
@@ -44,30 +26,24 @@ You only need **Node.js** (v18+) and **npm** installed on your computer.
 
 ### Installation & Run
 
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/gtxPrime/whats-wrap.git
-   cd whats-wrap
-   ```
-
-2. Install dependencies:
+1. Install dependencies:
    ```bash
    npm install
    ```
 
-3. Start the Vite local development server:
+2. Start the Vite local development server:
    ```bash
    npm run dev
    ```
 
-4. Open your browser and navigate to the local address displayed in your terminal (usually `http://localhost:5173/`).
+3. Open your browser and navigate to the local address displayed in your terminal (usually `http://localhost:5173/`).
 
 ---
 
 ## 🛠️ Tech Stack & Design
 
 - **Core Framework**: React (with state-driven responsive architectures).
-- **Tooling**: Vite & Rolldown.
+- **Tooling**: Vite.
 - **Styling**: Pure CSS3 variables with high-end glassmorphism, responsive flex grids, custom radial glow effects, and modern fluid typography.
 - **Asset Parsing**: JSZip (for reading compressed WhatsApp chat outputs directly).
 
@@ -85,4 +61,4 @@ WhatsWrap takes user privacy extremely seriously.
 
 ## 📝 License
 
-This project is licensed under the [MIT License](LICENSE). Made with ❤️ by [gtxPrime](https://github.com/gtxPrime).
+This project is licensed under the MIT License. Made by shivam raj.

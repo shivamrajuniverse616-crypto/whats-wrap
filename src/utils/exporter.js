@@ -1,4 +1,5 @@
 import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 /**
  * Maps gradient CSS class names → a solid fallback colour for html2canvas.
@@ -100,7 +101,7 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
 
     // ── Composite onto a padded canvas with watermark ─────────────────────────
     const MARGIN = 32;   // px padding around the card (at 1× — doubled for DPR)
-    const WM_H   = 28;   // extra bottom space for watermark
+    const WM_H   = 40;   // extra bottom space for watermark
     const DPR    = 2;    // must match scale above
 
     const outW = canvas.width  + MARGIN * 2 * DPR;
@@ -119,19 +120,11 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
     // Draw the captured card with margin
     ctx.drawImage(canvas, MARGIN * DPR, MARGIN * DPR);
 
-    // ── Watermark ─────────────────────────────────────────────────────────────
-    ctx.font         = `700 ${11 * DPR}px 'Outfit', system-ui, sans-serif`;
-    ctx.fillStyle    = '#708492';
-    ctx.globalAlpha  = 0.75;
-    ctx.textAlign    = 'right';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(
-      'whatsupwrap.netlify.app',
-      outW - MARGIN * DPR,
-      canvas.height + MARGIN * 2 * DPR + (WM_H * DPR) / 2
-    );
-    ctx.globalAlpha = 1;
-
+    // ── Watermark ────────────────────────────────────────────────────────────
+    ctx.font = '600 24px "Inter", sans-serif';
+    ctx.fillStyle = '#64748b'; // var(--on-surface-mute)
+    ctx.textAlign = 'center';
+    ctx.fillText('whatsupwrap.netlify.app', outW / 2, outH - MARGIN * DPR + 10);
     // ── Download ──────────────────────────────────────────────────────────────
     const link = document.createElement('a');
     link.download = `${filename}.png`;
@@ -145,6 +138,78 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
     alert('Export failed — check the browser console for details.');
   } finally {
     // Restore export buttons
+    exportBtns.forEach(btn => (btn.style.display = ''));
+  }
+};
+
+/**
+ * Exports a DOM element to a multi-page PDF using html2canvas and jsPDF.
+ *
+ * @param {string} elementId  - ID of the element to capture
+ * @param {string} filename   - Output filename (without .pdf)
+ */
+export const exportToPdf = async (elementId, filename = 'whatswrap-dashboard') => {
+  const node = document.getElementById(elementId);
+  if (!node) {
+    console.error(`[exportToPdf] Element #${elementId} not found.`);
+    return;
+  }
+
+  // Hide export buttons before capture
+  const exportBtns = node.querySelectorAll('.export-btn');
+  exportBtns.forEach(btn => (btn.style.display = 'none'));
+
+  try {
+    await document.fonts.ready;
+
+    // Use a slightly lower scale for PDF to manage file size and memory
+    const canvas = await html2canvas(node, {
+      backgroundColor: '#e0e5e9',
+      scale: 1.5,
+      useCORS: true,
+      allowTaint: false,
+      logging: false,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: window.innerWidth,
+      windowHeight: node.scrollHeight,
+
+      onclone: (_clonedDoc, clonedEl) => {
+        fixGradientText(_clonedDoc);
+        _clonedDoc.querySelectorAll('[style*="text-overflow"]').forEach(el => {
+          el.style.setProperty('text-overflow', 'ellipsis', 'important');
+        });
+        _clonedDoc.querySelectorAll('*').forEach(el => {
+          el.style.animation       = 'none';
+          el.style.transition      = 'none';
+          el.style.animationDelay  = '0s';
+        });
+      },
+    });
+
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    
+    // Use the exact dimensions of the canvas for a single continuous PDF page
+    const pdf = new jsPDF({
+      orientation: canvas.width > canvas.height ? 'l' : 'p',
+      unit: 'px',
+      format: [canvas.width, canvas.height]
+    });
+
+    pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+    // Add Watermark to the PDF before saving
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(14);
+    pdf.setTextColor(100, 116, 139);
+    // Draw the watermark text at the bottom center of the page
+    pdf.text('whatsupwrap.netlify.app', canvas.width / 2, canvas.height - 20, { align: 'center' });
+
+    pdf.save(`${filename}.pdf`);
+
+  } catch (err) {
+    console.error('[exportToPdf] Failed:', err);
+    alert('PDF Export failed — check the browser console for details.');
+  } finally {
     exportBtns.forEach(btn => (btn.style.display = ''));
   }
 };
