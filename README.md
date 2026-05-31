@@ -14,7 +14,11 @@ It is a **100% client-side** application, meaning that all chat parsing, logic c
 - 🌪️ **Alternate Universe Awards**: Fun, logic-derived category crowns including *CEO of Double Texting*, *Minister of Chaos* (burst texting cascades), *Emoji Economist*, *Meme Lord*, and *Certified Yapper*.
 - ⚡ **Personality Profiles**: Dynamically assigns custom roles (such as *The Night Owl*, *The Novelist*, *The Reactor*, or *The Speed Typer*) based on text length, time of day, and typing velocity.
 - 💝 **Compatibility Sync**: Measures reply response correlation, emoji style matches, overlap times, and overall conversation balance.
-- 📸 **High-Fidelity Exporters**: High-resolution, direct-to-image download engines for single panels or full dashboard stats for easy sharing.
+- ⏱️ **The Waiting Game**: Calculates average reply speeds to identify the 'Speed Demon' versus the one who takes their time.
+- 🔗 **The Media Diet**: Scans URLs to aggregate and visualize the top websites/apps shared between chatters.
+- 🤐 **The Silent Treatment**: Discovers the absolute longest gap went without talking in the entire chat history.
+- 📏 **Texter Typology**: Breaks down messaging styles into buckets from "One-Worder" to "The Novel".
+- 📸 **Smart PDF Engine**: An intelligent multi-page A4 PDF exporter that mathematically calculates page breaks to ensure no cards or charts are ever cut in half.
 
 ---
 
@@ -61,4 +65,4 @@ WhatsWrap takes user privacy extremely seriously.
 
 ## 📝 License
 
-This project is licensed under the MIT License. Made by shivam raj.
+This project is licensed under the MIT License. Made by gtxprime.

@@ -10,7 +10,14 @@ import Compatibility from './components/Compatibility';
 import ChartSection from './components/ChartSection';
 import Milestones from './components/Milestones';
 import SideNav from './components/SideNav';
-
+import FirstMessage from './components/FirstMessage';
+import HeatmapCalendar from './components/HeatmapCalendar';
+import Clouds from './components/Clouds';
+import ResponseTime from './components/ResponseTime';
+import MediaDiet from './components/MediaDiet';
+import SilentTreatment from './components/SilentTreatment';
+import TexterTypology from './components/TexterTypology';
+import { exportToPdf } from './utils/exporter';
 import { parseChat } from './utils/chatParser';
 import { analyzeChat } from './utils/chatAnalyzer';
 import { Sparkles, MessageCircle, Heart, ShieldCheck } from 'lucide-react';
@@ -216,6 +223,24 @@ export default function App() {
 
               <div style={{ height: 56 }} />
 
+              <section id="heatmap" className="dashboard-section">
+                <HeatmapCalendar data={chatData} />
+              </section>
+
+              <div style={{ height: 56 }} />
+
+              <section id="clouds" className="dashboard-section">
+                <Clouds data={chatData} />
+              </section>
+
+              <div style={{ height: 56 }} />
+
+              <section id="first-message" className="dashboard-section">
+                <FirstMessage data={chatData} />
+              </section>
+
+              <div style={{ height: 56 }} />
+
               <section id="capsule" className="dashboard-section">
                 <TimeCapsule capsules={chatData.monthlyCapsules} />
               </section>
@@ -224,6 +249,30 @@ export default function App() {
 
               <section id="awards" className="dashboard-section">
                 <UniverseAwards awards={chatData.awards} />
+              </section>
+
+              <div style={{ height: 56 }} />
+
+              <section id="response" className="dashboard-section">
+                <ResponseTime data={chatData} />
+              </section>
+
+              <div style={{ height: 56 }} />
+
+              <section id="silent" className="dashboard-section">
+                <SilentTreatment data={chatData} />
+              </section>
+
+              <div style={{ height: 56 }} />
+
+              <section id="media-diet" className="dashboard-section">
+                <MediaDiet data={chatData} />
+              </section>
+
+              <div style={{ height: 56 }} />
+
+              <section id="typology" className="dashboard-section">
+                <TexterTypology data={chatData} />
               </section>
 
               <div style={{ height: 56 }} />

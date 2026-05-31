@@ -1,11 +1,20 @@
 import React from 'react';
-import { MessageCircle, Type, Flame, Zap, Calendar, BarChart3, Download, Activity } from 'lucide-react';
+import { MessageCircle, Type, Flame, Zap, Calendar, BarChart3, Download, Activity, Sparkles } from 'lucide-react';
 import { exportToPng } from '../utils/exporter';
 
 const STATS = (data) => {
-  const { totalMessages, totalWords, maxStreak, avgMessagesPerDay, busiestDay, totalDays } = data;
+  const { totalMessages, totalWords, maxStreak, avgMessagesPerDay, busiestDay, totalDays, chatVibe } = data;
 
   return [
+    {
+      label: 'Overall Vibe',
+      value: chatVibe,
+      sub: 'Sentiment Check',
+      Icon: Sparkles,
+      gradient: 'var(--grad-primary)',
+      glow: 'rgba(167,139,250,0.2)',
+      textClass: 'gradient-text grad-primary-text',
+    },
     {
       label: 'Total Messages',
       value: totalMessages.toLocaleString(),

@@ -69,7 +69,16 @@ export function analyzeChat(messages, participants) {
       longestMsgContent: '',
       longestMsgWords: 0,
       totalResponseTime: 0,
-      responseTimesCount: 0
+      responseTimesCount: 0,
+      initiatorCount: 0,
+      laughCount: 0,
+      sentimentScore: 0,
+      questionCount: 0,
+      exclamationCount: 0,
+      typoCount: 0,
+      maxMonologue: 0,
+      linkDomains: {},
+      msgLengthBuckets: { short: 0, medium: 0, long: 0, novel: 0 }
     };
   });
 
@@ -97,6 +106,15 @@ export function analyzeChat(messages, participants) {
   let cascadeStart = null;
   let cascadeCount = 0;
 
+  // For monologue tracking
+  let monologueUser = null;
+  let currentMonologue = 0;
+
+  // Phase 3: Silent Treatment / Longest Gap
+  let longestGapSeconds = 0;
+  let longestGapStart = null;
+  let longestGapEnd = null;
+
   messages.forEach((msg, idx) => {
     const sender = msg.sender;
     // Fallback if message belongs to minor participant
@@ -111,6 +129,26 @@ export function analyzeChat(messages, participants) {
     if (msg.isViewOnce) stats.viewOnceCount++;
     if (msg.isDeleted) stats.deletedCount++;
     stats.linksCount += msg.linksCount;
+
+    // Domains tracking (Media Diet)
+    if (msg.content && msg.linksCount > 0) {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      const urls = msg.content.match(urlRegex) || [];
+      urls.forEach(url => {
+        try {
+          const domain = new URL(url).hostname.replace('www.', '');
+          stats.linkDomains[domain] = (stats.linkDomains[domain] || 0) + 1;
+        } catch(e) {}
+      });
+    }
+
+    // Message length typology
+    if (!msg.isMedia && !msg.isDeleted && msg.wordsCount > 0) {
+       if (msg.wordsCount === 1) stats.msgLengthBuckets.short++;
+       else if (msg.wordsCount <= 5) stats.msgLengthBuckets.medium++;
+       else if (msg.wordsCount <= 15) stats.msgLengthBuckets.long++;
+       else stats.msgLengthBuckets.novel++;
+    }
 
     // Date/Time extractions
     const d = msg.date;
@@ -153,17 +191,43 @@ export function analyzeChat(messages, participants) {
         .replace(/[^\w\s\u0900-\u097F']/g, '') // strip punctuation keeping hindi unicode chars
         .split(/\s+/);
       
+      // Sentiment dictionary (lightweight)
+      const posWords = new Set(['love', 'good', 'great', 'awesome', 'beautiful', 'happy', 'yay', 'thanks', 'wow', 'nice', 'best', 'amazing', 'sweet', 'cute', 'fun', 'funny', 'cool', 'yay', 'perfect']);
+      const negWords = new Set(['bad', 'sad', 'hate', 'angry', 'mad', 'worst', 'terrible', 'awful', 'boring', 'tired', 'sick', 'upset', 'hurt', 'stupid', 'dumb', 'shit', 'fuck', 'annoying', 'horrible']);
+
       words.forEach(w => {
+        if (posWords.has(w)) stats.sentimentScore += 1;
+        if (negWords.has(w)) stats.sentimentScore -= 1;
+
         if (w.length > 2 && !STOP_WORDS.has(w)) {
           stats.wordsUsed[w] = (stats.wordsUsed[w] || 0) + 1;
           wordsOverall[w] = (wordsOverall[w] || 0) + 1;
         }
       });
+
+      // Laugh Track
+      if (/haha|lol|lmao|hehe|😂|😭|💀|rofl/i.test(msg.content)) {
+        stats.laughCount++;
+      }
+
+      // Questions, Exclamations, Typos
+      stats.questionCount += (msg.content.match(/\?/g) || []).length;
+      stats.exclamationCount += (msg.content.match(/!/g) || []).length;
+      if (msg.content.trim().startsWith('*')) {
+        stats.typoCount++;
+      }
     }
 
     // Double Text Tracking (>5 min silence or successive blocks without user change, we count consecutive sends)
     if (lastMessage) {
       const timeDiffSec = (d.getTime() - lastMessage.date.getTime()) / 1000;
+      
+      // Phase 3: Update global longest gap
+      if (timeDiffSec > longestGapSeconds) {
+         longestGapSeconds = timeDiffSec;
+         longestGapStart = lastMessage.date;
+         longestGapEnd = d;
+      }
       
       if (lastMessage.sender === msg.sender) {
         // Double text if gap is > 300 seconds (5 mins)
@@ -197,16 +261,38 @@ export function analyzeChat(messages, participants) {
         cascadeStart = null;
         cascadeCount = 0;
 
+        // Monologue check
+        if (monologueUser) {
+          if (currentMonologue > userStats[monologueUser].maxMonologue) {
+            userStats[monologueUser].maxMonologue = currentMonologue;
+          }
+        }
+        monologueUser = msg.sender;
+        currentMonologue = 1;
+
         // Reply Speed Sync: calculate response time if gap is less than 3 hours (excluding overnight silence)
         if (timeDiffSec < 10800) {
           stats.totalResponseTime += timeDiffSec;
           stats.responseTimesCount++;
+        }
+
+        // Conversation Initiator (Ice Breaker): if gap > 8 hours (28800 sec)
+        if (timeDiffSec > 28800) {
+          stats.initiatorCount++;
         }
       }
     } else {
       cascadeUser = msg.sender;
       cascadeStart = d;
       cascadeCount = 1;
+
+      monologueUser = msg.sender;
+      currentMonologue = 1;
+    }
+
+    // Always increment monologue if it's the same user
+    if (lastMessage && lastMessage.sender === msg.sender) {
+      currentMonologue++;
     }
 
     lastMessage = msg;
@@ -215,6 +301,12 @@ export function analyzeChat(messages, participants) {
   // Resolve final active cascade
   if (cascadeUser && cascadeCount >= 3) {
     userStats[cascadeUser].chaosCascadesCount++;
+  }
+  // Resolve final monologue
+  if (monologueUser) {
+    if (currentMonologue > userStats[monologueUser].maxMonologue) {
+      userStats[monologueUser].maxMonologue = currentMonologue;
+    }
   }
 
   // Finalize Streaks
@@ -331,6 +423,19 @@ export function analyzeChat(messages, participants) {
   // Milestones compilation
   const milestones = compileMilestones(messages, chatters, maxStreak, busiestDayStr, busiestDayCount);
 
+  // First message (skip media and deleted messages)
+  const firstMessage = messages.find(m => !m.isMedia && !m.isDeleted && m.content && m.content.trim().length > 0) || (messages.length > 0 ? messages[0] : null);
+  const firstMessageDateStr = firstMessage ? firstMessage.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+
+  // Overall Vibe Check
+  let overallSentiment = 0;
+  chatters.forEach(u => { overallSentiment += userStats[u].sentimentScore; });
+  let chatVibe = 'Neutral ⚖️';
+  if (overallSentiment > 20) chatVibe = 'Positive ✨';
+  if (overallSentiment > 100) chatVibe = 'Overwhelmingly Positive 💖';
+  if (overallSentiment < -10) chatVibe = 'A bit Chaotic 🌪️';
+  if (overallSentiment < -50) chatVibe = 'Slightly Toxic ☢️';
+
   return {
     chatters,
     totalMessages,
@@ -354,7 +459,20 @@ export function analyzeChat(messages, participants) {
     awards,
     personalities,
     compatibility,
-    milestones
+    milestones,
+    chatVibe,
+    firstMessage: firstMessage ? {
+      sender: firstMessage.sender,
+      content: firstMessage.content,
+      dateStr: firstMessageDateStr,
+      timeStr: firstMessage.date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+    } : null,
+    dayMessageCounts,
+    longestGap: {
+      durationSeconds: longestGapSeconds,
+      start: longestGapStart ? longestGapStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '',
+      end: longestGapEnd ? longestGapEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''
+    }
   };
 }
 
@@ -388,6 +506,40 @@ function compileAwards(chatters, userStats) {
   // Human Search Bar (most links shared)
   const linksWinner = s1.linksCount >= s2.linksCount ? u1 : u2;
 
+  // The Comedian (most laughs)
+  const comedyWinner = s1.laughCount >= s2.laughCount ? u1 : u2;
+
+  // The Ice Breaker (most initiator count)
+  const iceBreakerWinner = s1.initiatorCount >= s2.initiatorCount ? u1 : u2;
+
+  // Response Times
+  const rt1 = s1.responseTimesCount > 0 ? (s1.totalResponseTime / s1.responseTimesCount / 60) : 0;
+  const rt2 = s2.responseTimesCount > 0 ? (s2.totalResponseTime / s2.responseTimesCount / 60) : 0;
+  
+  // The Flash (lowest non-zero RT)
+  let flashWinner = u1;
+  let flashTime = rt1;
+  if (rt1 > 0 && rt2 > 0) {
+    flashWinner = rt1 <= rt2 ? u1 : u2;
+    flashTime = Math.min(rt1, rt2);
+  }
+
+  // The Ghost (highest RT)
+  const ghostWinner = rt1 >= rt2 ? u1 : u2;
+  const ghostTime = Math.max(rt1, rt2);
+
+  // The Question Master
+  const questionWinner = s1.questionCount >= s2.questionCount ? u1 : u2;
+
+  // The Exclaimer
+  const exclamationWinner = s1.exclamationCount >= s2.exclamationCount ? u1 : u2;
+
+  // The Proofreader (Typos)
+  const typoWinner = s1.typoCount >= s2.typoCount ? u1 : u2;
+
+  // The Monologue
+  const monologueWinner = s1.maxMonologue >= s2.maxMonologue ? u1 : u2;
+
   return [
     {
       id: 'double-text',
@@ -408,6 +560,16 @@ function compileAwards(chatters, userStats) {
       emoji: '🌪️',
       description: 'Turns one simple thought into an overlapping cascade of 3+ quick-fire messages.',
       colorClass: 'purple'
+    },
+    {
+      id: 'monologue',
+      title: 'The Monologue',
+      winner: monologueWinner,
+      score: userStats[monologueWinner].maxMonologue,
+      metricName: 'Consecutive texts',
+      emoji: '🎤',
+      description: 'Had an entire conversation with themselves before anyone even had a chance to reply.',
+      colorClass: 'pink'
     },
     {
       id: 'emoji',
@@ -440,6 +602,36 @@ function compileAwards(chatters, userStats) {
       colorClass: 'emerald'
     },
     {
+      id: 'question-master',
+      title: 'The Inquisitor',
+      winner: questionWinner,
+      score: userStats[questionWinner].questionCount,
+      metricName: 'Questions asked',
+      emoji: '❓',
+      description: 'Never out of questions. Treats every conversation like an interrogation room.',
+      colorClass: 'cyan'
+    },
+    {
+      id: 'exclaimer',
+      title: 'The Exclaimer',
+      winner: exclamationWinner,
+      score: userStats[exclamationWinner].exclamationCount,
+      metricName: 'Exclamation marks',
+      emoji: '❗',
+      description: 'Always excited! Everything they say sounds like they are shouting it across the room.',
+      colorClass: 'sunset'
+    },
+    {
+      id: 'typo',
+      title: 'The Proofreader',
+      winner: typoWinner,
+      score: userStats[typoWinner].typoCount,
+      metricName: 'Typos corrected (*)',
+      emoji: '🩹',
+      description: 'Notorious for typing too fast, and then immediately sending a *correction in the next text.',
+      colorClass: 'purple'
+    },
+    {
       id: 'search-bar',
       title: 'Human Search Bar',
       winner: linksWinner,
@@ -448,6 +640,46 @@ function compileAwards(chatters, userStats) {
       emoji: '🔗',
       description: 'Already has the exact hyperlink ready to share before you even ask.',
       colorClass: 'cyan'
+    },
+    {
+      id: 'comedian',
+      title: 'The Comedian',
+      winner: comedyWinner,
+      score: userStats[comedyWinner].laughCount,
+      metricName: 'Laughs texted',
+      emoji: '😂',
+      description: 'The primary source of "lol"s, "lmao"s, and laughing emojis. Always keeping the vibes light.',
+      colorClass: 'sunset'
+    },
+    {
+      id: 'ice-breaker',
+      title: 'The Ice Breaker',
+      winner: iceBreakerWinner,
+      score: userStats[iceBreakerWinner].initiatorCount,
+      metricName: 'Chats initiated',
+      emoji: '🧊',
+      description: 'The one who always texts first after a long silence. The heartbeat of the chat.',
+      colorClass: 'cyan'
+    },
+    {
+      id: 'flash',
+      title: 'The Flash',
+      winner: flashWinner,
+      score: +flashTime.toFixed(1),
+      metricName: 'Avg response (mins)',
+      emoji: '⚡',
+      description: 'Blinks and they have already replied. Basically lives inside the chat.',
+      colorClass: 'gold'
+    },
+    {
+      id: 'ghost',
+      title: 'The Ghost',
+      winner: ghostWinner,
+      score: +ghostTime.toFixed(1),
+      metricName: 'Avg response (mins)',
+      emoji: '👻',
+      description: 'Notorious for reading a message and replying 4 hours later as if nothing happened.',
+      colorClass: 'purple'
     }
   ];
 }
