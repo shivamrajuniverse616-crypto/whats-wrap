@@ -23,12 +23,15 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
     watermark.style.zIndex = '9999';
     node.appendChild(watermark);
 
-    // Create high-res screenshot
+    // Create high-res screenshot with a clean fixed width to guarantee perfect alignment & margins on all devices
     const dataUrl = await toPng(node, {
       backgroundColor: 'var(--bg-base)',
       style: {
         borderRadius: '24px',
-        padding: '24px 24px 36px 24px', // extra padding-bottom to clear watermark space
+        padding: '24px 24px 44px 24px', // extra padding-bottom to clear watermark space
+        width: '580px',
+        maxWidth: '580px',
+        boxSizing: 'border-box',
       },
       quality: 0.98,
       pixelRatio: 2.5, // Crisp 2.5x density for crystal-clear sharing!
