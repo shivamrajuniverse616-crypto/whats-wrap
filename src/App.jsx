@@ -206,9 +206,7 @@ export default function App() {
           <main className="app-main" style={{ position: 'relative', zIndex: 1 }}>
             <DashboardHeader
               chatters={chatData.chatters}
-              streak={chatData.maxStreak}
               onReset={handleReset}
-              startDate={chatData.milestones[0]?.date}
             />
 
             {/* All sections rendered one below each other */}

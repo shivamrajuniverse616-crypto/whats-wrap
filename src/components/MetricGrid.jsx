@@ -3,8 +3,11 @@ import { MessageCircle, Type, Flame, Zap, Calendar, BarChart3, Download } from '
 import { exportToPng } from '../utils/exporter';
 
 const STATS = (data) => {
-  const { totalMessages, totalWords, maxStreak, avgMessagesPerDay, busiestDay, chatters, userStats } = data;
-  const [u1, u2] = chatters;
+  const { totalMessages, totalWords, maxStreak, avgMessagesPerDay, busiestDay, chatters, milestones } = data;
+  
+  // Try to grab the first milestone date (which is the Start Date)
+  const startDateVal = milestones?.[0]?.date || 'N/A';
+
   return [
     {
       label: 'Total Messages',
@@ -50,6 +53,15 @@ const STATS = (data) => {
       gradient: 'var(--grad-gold)',
       glow: 'rgba(251,191,36,0.18)',
       textClass: 'gradient-text grad-gold-text',
+    },
+    {
+      label: 'Timeline Kickoff',
+      value: startDateVal,
+      sub: 'First message logged',
+      Icon: Calendar,
+      gradient: 'var(--grad-pink)',
+      glow: 'rgba(216,27,96,0.18)',
+      textClass: 'gradient-text grad-pink-text',
     },
   ];
 };
@@ -104,7 +116,13 @@ export default function MetricGrid({ data }) {
         }
         @media (min-width: 600px) {
           .overview-grid {
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+          }
+        }
+        @media (min-width: 960px) {
+          .overview-grid {
+            grid-template-columns: repeat(6, 1fr);
             gap: 14px;
           }
         }
