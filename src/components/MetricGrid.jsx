@@ -56,8 +56,8 @@ const STATS = (data) => {
     },
     {
       label: 'Timeline Kickoff',
-      value: startDateVal,
-      sub: 'First message logged',
+      value: `${maxStreak} Day Streak`,
+      sub: `Started ${startDateVal}`,
       Icon: Calendar,
       gradient: 'var(--grad-pink)',
       glow: 'rgba(216,27,96,0.18)',
