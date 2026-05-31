@@ -55,7 +55,7 @@ const STATS = (data) => {
       textClass: 'gradient-text grad-gold-text',
     },
     {
-      label: 'Timeline Kickoff',
+      label: 'First Dive',
       value: `${maxStreak} Day Streak`,
       sub: `Started ${startDateVal}`,
       Icon: Calendar,
