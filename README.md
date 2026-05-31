@@ -1,7 +1,7 @@
 # 💬 WhatsWrap
 
 <p align="center">
-  <img src="public/favicon.svg" alt="WhatsWrap Logo" width="120" height="120" style="border-radius: 28px;" />
+  <img src="public/banner.png" alt="WhatsWrap Banner" width="100%" style="border-radius: 12px;" />
 </p>
 
 <p align="center">
