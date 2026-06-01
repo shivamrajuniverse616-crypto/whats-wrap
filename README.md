@@ -2,7 +2,7 @@
 
   <img src="public/favicon.svg" alt="WhatsWrap Logo" width="120" height="120" />
 
-# WhatsWrap
+# 💬 WhatsWrap
 
 **Export, Wrap, and Relive Your Conversations.**
 
@@ -33,6 +33,8 @@
     <a href="#-tech-stack">Tech Stack</a>
     <span> | </span>
     <a href="#-getting-started">Getting Started</a>
+    <span> | </span>
+    <a href="#-hosting-on-netlify">Hosting on Netlify</a>
     <span> | </span>
     <a href="#-privacy--security">Privacy</a>
     <span> | </span>
@@ -122,8 +124,6 @@ WhatsWrap is built with modern web technologies for a smooth, responsive, and se
 - `jszip` (client-side compressed chat archive parsing)
 - `jspdf` / `html2canvas` / `html-to-image` (for the smart PDF export engine)
 - `lucide-react` (for smooth and consistent icons)
-- `@emailjs/browser` (for contact/feedback integration)
-- `nodemailer` (for development email scripts)
 
 </details>
 
@@ -183,6 +183,41 @@ You only need **Node.js** (v18+) and **npm** installed on your computer.
 
 ---
 
+## <a id="-hosting-on-netlify"></a>🌐 Hosting on Netlify
+
+You can easily deploy WhatsWrap to Netlify for free:
+
+### Option 1: Via Netlify Git Integration (Recommended)
+1. **Push your repository** to GitHub, GitLab, or Bitbucket.
+2. **Log in to Netlify** and click **Add new site** > **Import an existing project**.
+3. Select your Git provider and authorize Netlify.
+4. Select the `whats-wrap` repository.
+5. Netlify will automatically detect Vite settings:
+   - **Build command:** `npm run build`
+   - **Publish directory:** `dist`
+6. Click **Deploy site**. Netlify will build and host your site, automatically rebuilding it on every `git push`.
+
+### Option 2: Via Netlify CLI
+1. Install the Netlify CLI globally:
+   ```bash
+   npm install -g netlify-cli
+   ```
+2. Log in to your Netlify account:
+   ```bash
+   netlify login
+   ```
+3. Initialize the site config:
+   ```bash
+   netlify init
+   ```
+4. Build and deploy:
+   ```bash
+   npm run build
+   netlify deploy --prod --dir=dist
+   ```
+
+---
+
 ## <a id="-privacy--security"></a>🔒 Privacy & Security
 
 WhatsWrap takes user privacy extremely seriously.
@@ -213,6 +248,5 @@ This project is licensed under the [MIT License](LICENSE). Made with ❤️ by [
 
 <div align="center">
   <b>Built with ❤️ by the WhatsWrap Team</b><br/>
-  <a href="https://github.com/gtxprime">GitHub</a> •
-  <a href="mailto:contact@whatswrap.app">Contact</a>
+  <a href="https://github.com/gtxprime">GitHub</a>
 </div>
