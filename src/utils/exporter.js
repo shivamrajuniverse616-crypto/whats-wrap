@@ -107,10 +107,9 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
     window.scrollTo(0, originalScrollY);
 
     // ── Composite onto a padded canvas with watermark ─────────────────────────
-    const MARGIN = 32;   // px padding around the card (at 1× — doubled for DPR)
+    const MARGIN = 32;   // px padding around the card (at 1px, doubled for DPR)
     const WM_H   = 40;   // extra bottom space for watermark
     const DPR    = 2;    // must match scale above
-
     const outW = canvas.width  + MARGIN * 2 * DPR;
     const outH = canvas.height + MARGIN * 2 * DPR + WM_H * DPR;
 
@@ -142,7 +141,7 @@ export const exportToPng = async (elementId, filename = 'whatswrap-card') => {
 
   } catch (err) {
     console.error('[exportToPng] Failed:', err);
-    alert('Export failed — check the browser console for details.');
+    alert('Export failed: check the browser console for details.');
   } finally {
     // Restore export buttons
     exportBtns.forEach(btn => (btn.style.display = ''));
@@ -327,7 +326,7 @@ export const exportToPdf = async (elementId, filename = 'whatswrap-dashboard') =
 
   } catch (err) {
     console.error('[exportToPdf] Failed:', err);
-    alert('PDF Export failed — check the browser console for details.');
+    alert('PDF Export failed: check the browser console for details.');
   } finally {
     exportBtns.forEach(btn => (btn.style.display = ''));
   }

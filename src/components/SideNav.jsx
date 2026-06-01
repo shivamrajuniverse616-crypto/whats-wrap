@@ -148,52 +148,16 @@ export default function SideNav({ onReset, chatters, streak }) {
 
       {/* ── Mobile Bottom Nav ── */}
       <nav className="mobile-bottom-nav">
-        
-        {/* Left Side */}
-        {NAV_ITEMS.filter(item => ['heatmap', 'awards'].includes(item.id)).map(({ id, label, Icon }) => (
+        {NAV_ITEMS.map(({ id, label, Icon }) => (
           <button
             key={id}
             className={`mobile-nav-item${active === id ? ' active' : ''}`}
             onClick={() => handleClick(id)}
           >
             <Icon className="mobile-nav-item-icon" size={20} />
-            <span>{label.split(' ')[0]}</span>
+            <span>{label}</span>
           </button>
         ))}
-
-        {/* Center FAB */}
-        {NAV_ITEMS.filter(item => item.id === 'overview').map(({ id, label, Icon }) => (
-          <button
-            key={id}
-            className={`mobile-nav-item center-fab${active === id ? ' active' : ''}`}
-            onClick={() => handleClick(id)}
-          >
-            <Icon className="mobile-nav-item-icon" size={24} />
-            <span>{label.split(' ')[0]}</span>
-          </button>
-        ))}
-
-        {/* Right Side */}
-        {NAV_ITEMS.filter(item => item.id === 'capsule').map(({ id, label, Icon }) => (
-          <button
-            key={id}
-            className={`mobile-nav-item${active === id ? ' active' : ''}`}
-            onClick={() => handleClick(id)}
-          >
-            <Icon className="mobile-nav-item-icon" size={20} />
-            <span>{label.split(' ')[0]}</span>
-          </button>
-        ))}
-
-        {/* More Menu */}
-        <button
-          className={`mobile-nav-item${isMobileMenuOpen ? ' active' : ''}`}
-          onClick={() => setIsMobileMenuOpen(true)}
-        >
-          <Menu className="mobile-nav-item-icon" size={20} />
-          <span>More</span>
-        </button>
-
       </nav>
     </>
   );

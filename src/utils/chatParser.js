@@ -79,11 +79,14 @@ export function parseChat(rawText) {
       const content = match[4] ? match[4].trim() : '';
 
       // Skip system messages like security code changes, groups joined, etc.
-      // A sender name shouldn't contain phrases like "added", "created", "left", etc., if they have no colon separator
       if (sender.toLowerCase().includes('changed your security code') || 
           sender.toLowerCase().includes('messages and calls are end-to-end encrypted')) {
         continue;
       }
+
+      // Check if it's a sticker file starting with STK
+      const contentLower = content.toLowerCase();
+      const isSticker = contentLower.includes('stk-') || /stk-\d+/i.test(contentLower);
 
       // Parse date and time
       const dateObj = parseDateTime(dateStr, timeStr, dateFormat);
@@ -91,29 +94,41 @@ export function parseChat(rawText) {
 
       participantsSet.add(sender);
 
+      const isMedia = checkMedia(content) || content.trim() === '' || isSticker;
+      const isViewOnce = content.trim() === '' || contentLower.includes('view once');
+      const isDeleted = checkDeleted(content);
+
       lastMessage = {
         date: dateObj,
         sender,
         content,
-        isMedia: checkMedia(content) || content.trim() === '',
-        isViewOnce: content.trim() === '',
-        isDeleted: checkDeleted(content),
+        isMedia,
+        isSticker,
+        isViewOnce,
+        isDeleted,
         linksCount: countLinks(content),
-        wordsCount: content ? content.split(/\s+/).filter(w => w.trim().length > 0).length : 0,
-        charsCount: content ? content.length : 0
+        wordsCount: (isMedia || isDeleted) ? 0 : (content ? content.split(/\s+/).filter(w => w.trim().length > 0).length : 0),
+        charsCount: (isMedia || isDeleted) ? 0 : (content ? content.length : 0)
       };
       
       parsedMessages.push(lastMessage);
     } else {
       // It is a continuation of the previous message (multi-line)
       if (lastMessage) {
+        const lineLower = line.toLowerCase();
+        const isSticker = lineLower.includes('stk-') || /stk-\d+/i.test(lineLower);
+
         lastMessage.content += '\n' + rawLine;
-        lastMessage.wordsCount = lastMessage.content.split(/\s+/).filter(w => w.trim().length > 0).length;
-        lastMessage.charsCount = lastMessage.content.length;
+        
         // Re-evaluate flags on extended content
-        lastMessage.isMedia = checkMedia(lastMessage.content);
+        lastMessage.isMedia = checkMedia(lastMessage.content) || lastMessage.content.trim() === '' || isSticker;
+        lastMessage.isSticker = lastMessage.isSticker || isSticker;
+        lastMessage.isViewOnce = lastMessage.content.trim() === '' || lastMessage.content.toLowerCase().includes('view once');
         lastMessage.isDeleted = checkDeleted(lastMessage.content);
         lastMessage.linksCount = countLinks(lastMessage.content);
+
+        lastMessage.wordsCount = (lastMessage.isMedia || lastMessage.isDeleted) ? 0 : lastMessage.content.split(/\s+/).filter(w => w.trim().length > 0).length;
+        lastMessage.charsCount = (lastMessage.isMedia || lastMessage.isDeleted) ? 0 : lastMessage.content.length;
       }
     }
   }
@@ -191,7 +206,10 @@ function checkMedia(content) {
     lower.includes('contact card omitted') ||
     content.includes('‎image omitted') || 
     content.includes('‎video omitted') ||
-    content.includes('‎sticker omitted')
+    content.includes('‎sticker omitted') ||
+    lower.includes('file attached') ||
+    lower.includes('attached:') ||
+    lower.includes('view once')
   );
 }
 
